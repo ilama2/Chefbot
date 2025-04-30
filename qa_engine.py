@@ -1,88 +1,110 @@
-from vector_store import query_vector_store, rerank_results, format_context
+from langchain.vectorstores import Pinecone
+from langchain.prompts import PromptTemplate
+from langchain.chat_models import ChatOpenAI
+from langchain.schema import Document
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI
+from vector_store import query_vector_store, rerank_results, format_context, get_embedding
 
-def ask_question_with_video_context(question, video_id, client, pc, index_name):
-    """Answer question using RAG with video transcript context."""
-    # Get relevant chunks
-    results = query_vector_store(question, client, pc, index_name, video_id, top_k=8)
+# Initializes the custom retriever
+class PineconeHybridRetriever:
+    def __init__(self, client, pc, index_name, video_id, recipe_name=None):
+        self.client = client
+        self.pc = pc
+        self.index_name = index_name
+        self.video_id = video_id
+        self.recipe_name = recipe_name
+
+    # Retrieves relevant documents from Pinecone based on the query
+    def get_relevant_documents(self, query, top_k=5):
+
+        # Get the embedding for the query
+        query_embedding = get_embedding(query, self.client)
+        
+        # Define the Pinecone index
+        index = self.pc.Index(self.index_name)
+        
+        # Prepare the query params for Pinecone
+        query_params = {
+            "vector": query_embedding,
+            "top_k": top_k,
+            "include_metadata": True
+        }
+        
+        # Add the filter for recipe_name if it's provided
+        if self.recipe_name:
+            query_params["filter"] = {"recipe_name": {"$eq": self.recipe_name}}
+        
+        # Execute the query
+        results = index.query(**query_params)
+        
+        # Return the matches found in Pinecone
+        return [Document(page_content=match["metadata"]["text"], metadata=match["metadata"]) for match in results["matches"]]
     
-    if not results:
-        #return "I couldn't find any relevant information to answer your question. Could you provide more details or ask a different question?"
-        return ask_question_general(question, client)
+
+def ask_question_with_video_context(question, video_id, client, pc, index_name, recipe_name):
+    # Initialize the PineconeHybridRetriever to fetch relevant documents
+    retriever = PineconeHybridRetriever(client, pc, index_name, video_id, recipe_name)
     
-    # Rerank results
-    reranked_results = rerank_results(question, results)
+    # Use the retrieved documents as context for the LLM
+    docs = retriever.get_relevant_documents(question)
+    context = format_context(docs)  # Format the context
     
-    # Format context
-    context = format_context(reranked_results[:5])  # Use top 5 after reranking
-    
-    # Try to identify the recipe name for better context
-    recipe_names = [r["metadata"].get("recipe_name", "").lower() for r in reranked_results 
-                   if "recipe_name" in r["metadata"]]
-    recipe_name = max(set(recipe_names), key=recipe_names.count) if recipe_names else "this recipe"
-    
-    # Get video ID from results if not provided
-    if not video_id and results:
-        video_id = results[0]["metadata"].get("video_id", "unknown")
-    
-    # Create prompt for LLM
-    prompt = f"""
-You are a warm and expert virtual chef assistant. Your job is to help the user based on a YouTube cooking video transcript.
+    # Create a prompt template for answering the question
+    prompt = PromptTemplate(
+        input_variables=["context", "question", "recipe_name"],
+        template="""  
+        You are a warm and expert virtual chef assistant. Your job is to help the user based on a YouTube cooking video transcript.
 
-Answer the user's question about {recipe_name} using ONLY the information from the provided context.
+        Answer the user's question about {recipe_name} using ONLY the information from the provided context.
 
-If the context doesn't contain enough information to answer fully, acknowledge this limitation and provide what you can from the context.
-If you cannot answer the question from the context, say so clearly rather than making up information.
+        If the context doesn't contain enough information to answer fully, acknowledge this limitation and provide what you can from the context.
+        If you cannot answer the question from the context, say so clearly rather than making up information.
 
-Be especially careful with:
-- Quantities, measurements, and proportions
-- Cooking times and temperatures 
-- Techniques and special instructions
-- Equipment and tools mentioned
+        Be especially careful with:
+        - Quantities, measurements, and proportions
+        - Cooking times and temperatures 
+        - Techniques and special instructions
+        - Equipment and tools mentioned
 
-Provide your answer in a friendly, confident chef's voice.
+        Provide your answer in a friendly, confident chef's voice.
 
-Context from video transcript:
-{context}
+        Context from video transcript:
+        {context}
 
-User's Question: {question}
+        User's Question: {question}
 
-Answer:
-"""
-    
-    # Get answer from LLM
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a friendly and knowledgeable recipe assistant who helps users understand cooking steps based on YouTube video transcripts."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=500
+        Answer:"""
     )
     
-    return response.choices[0].message.content
-
-def ask_question_general(question, client):
-    """Answer general cooking questions without specific video context."""
-    prompt = f"""
-You are a helpful cooking assistant with broad knowledge about cooking techniques, ingredients, and recipes.
-
-Question: {question}
-
-Please provide a helpful, accurate response. If the question requires specific recipe details you don't have, provide general guidance instead.
-
-Answer:
-"""
+    # Initialize the LLM (use ChatOpenAI with your desired model and parameters)
+    llm = ChatOpenAI(model="gpt-4", temperature=0.7)
     
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a friendly recipe expert with years of cooking experience."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=400
+    # Create an LLMChain with the prompt and LLM
+    chain = LLMChain(prompt=prompt, llm=llm)
+    
+    # Generate the answer based on the context and question and recipe name
+    answer = chain.run({"context": context, "question": question, "recipe_name": recipe_name})
+    
+    return answer
+
+def ask_question_general(question, client, pc, index_name):
+    retriever = PineconeHybridRetriever(client, pc, index_name)
+    prompt = PromptTemplate(
+        input_variables=["context", "question"],
+        template="You are a knowledgeable assistant. Please answer this question using only the provided context:\n{context}\n\nQuestion: {question}\nAnswer:"
     )
+
+    # Initialize LLM and chain
+    llm = ChatOpenAI(model="gpt-4", temperature=0.7)
+    chain = LLMChain(prompt=prompt, llm=llm)
     
-    return response.choices[0].message.content
+    # Get relevant documents from Pinecone
+    docs = retriever.get_relevant_documents(question)
+    context = format_context(docs)  # Adjust the context as necessary
+
+    # Get the answer from the LLM
+    answer = chain.run({"context": context, "question": question})
+    return answer
 

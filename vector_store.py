@@ -82,7 +82,7 @@ def extract_metadata(text, video_id):
     # Try to extract key ingredients 
     ingredients = []
     ingredient_patterns = [
-        r'(\d+\s*(?:cup|tablespoon|teaspoon|oz|ounce|pound|gram)s?\s+of\s+[^\.,]+)',
+        r'(\d+[\s\/\-\.]*\d*\s*(?:cup|cups|tablespoon|tablespoons|tbsp|teaspoon|teaspoons|tsp|oz|ounce|ounces|lb|lbs|gram|grams|g|kg|ml|liter|liters|clove|cloves|can|cans)?\s+[^\,\.\n]+)',
         r'(\d+\s+[^\.,]+)'
     ]
     
@@ -188,27 +188,29 @@ def rerank_results(question, results):
     return results
 
 # Format retrieved results into context for the LLM.
-def format_context(results):
+def format_context(docs):
     # Simple deduplication by content fingerprinting
     seen_fingerprints = set()
     unique_chunks = []
-    
-    for result in results:
-        text = result["metadata"]["text"].strip()
+
+    for doc in docs:
+        # Access 'text' from the metadata of the Document
+        text = doc.metadata["text"].strip()  # Accessing text from doc.metadata
+        
         # Create a simple fingerprint from the first 100 chars
         fingerprint = text[:100].lower()
-        
+
         if fingerprint not in seen_fingerprints:
             seen_fingerprints.add(fingerprint)
             unique_chunks.append({
                 "text": text,
-                "score": result.get("adjusted_score", result["score"]),
-                "metadata": result["metadata"]
+                "score": doc.score if hasattr(doc, 'score') else 0,  # Get score if available
+                "metadata": doc.metadata
             })
-    
+
     # Format the context
     context_parts = []
     for i, chunk in enumerate(unique_chunks, 1):
         context_parts.append(f"[Chunk {i}]\n{chunk['text']}")
-    
+
     return "\n\n---\n\n".join(context_parts)

@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Import th functionality
-from qa_engine import ask_question_with_video_context, ask_question_general
+from qa_engine import ask_question_with_video_context , ask_question_general
 from transcript_processor import get_video_transcript, extract_video_id
 from vector_store import add_video_to_vectorstore, create_pinecone_index_if_needed
 
@@ -85,7 +85,7 @@ st.markdown("<h1 class='main-header'> ChefBot 🍳</h1>", unsafe_allow_html=True
 st.markdown("<p class='subheader'>Analyze cooking videos and ask questions about recipes</p>", unsafe_allow_html=True)
 
 # Sidebar
-with st.sidebar:
+with st.sidebar:    
     st.header("About")
     st.write("""
     This app helps you analyze cooking videos from YouTube. 
@@ -187,7 +187,7 @@ if ask_button and question:
     with st.spinner("Thinking..."):
         if st.session_state.video_processed and st.session_state.current_video_id:
             # Question about processed video
-            answer = ask_question_with_video_context(question, st.session_state.current_video_id, client, pc, index_name)
+            answer = ask_question_with_video_context(question, st.session_state.current_video_id, client, pc, index_name, recipe_name=None)
             
             # Add to conversation history
             st.session_state.conversation_history.append({"question": question, "answer": answer})
