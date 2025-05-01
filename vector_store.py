@@ -169,7 +169,7 @@ def query_vector_store(question, client, pc, index_name, video_id=None, top_k=5)
     # Execute query
     results = index.query(**query_params)
     
-    return results.get("matches", [])
+    return results.get("matches", []) 
 
 # Rerank results based on context relevance
 def rerank_results(question, results):
@@ -188,29 +188,27 @@ def rerank_results(question, results):
     return results
 
 # Format retrieved results into context for the LLM.
-def format_context(docs):
+def format_context(results):
     # Simple deduplication by content fingerprinting
     seen_fingerprints = set()
     unique_chunks = []
-
-    for doc in docs:
-        # Access 'text' from the metadata of the Document
-        text = doc.metadata["text"].strip()  # Accessing text from doc.metadata
-        
+    
+    for result in results:
+        text = result["metadata"]["text"].strip()
         # Create a simple fingerprint from the first 100 chars
         fingerprint = text[:100].lower()
-
+        
         if fingerprint not in seen_fingerprints:
             seen_fingerprints.add(fingerprint)
             unique_chunks.append({
                 "text": text,
-                "score": doc.score if hasattr(doc, 'score') else 0,  # Get score if available
-                "metadata": doc.metadata
+                "score": result.get("adjusted_score", result["score"]),
+                "metadata": result["metadata"]
             })
-
+    
     # Format the context
     context_parts = []
     for i, chunk in enumerate(unique_chunks, 1):
         context_parts.append(f"[Chunk {i}]\n{chunk['text']}")
-
+    
     return "\n\n---\n\n".join(context_parts)

@@ -187,13 +187,14 @@ if ask_button and question:
     with st.spinner("Thinking..."):
         if st.session_state.video_processed and st.session_state.current_video_id:
             # Question about processed video
-            answer = ask_question_with_video_context(question, st.session_state.current_video_id, client, pc, index_name, recipe_name=None)
+            answer = ask_question_with_video_context(question, st.session_state.current_video_id, client, pc, index_name)
             
             # Add to conversation history
             st.session_state.conversation_history.append({"question": question, "answer": answer})
         else:
             # General cooking question
-            answer = ask_question_general(question, client)
+            answer = ask_question_general(question,client)
+
             
             # Add to conversation history
             st.session_state.conversation_history.append({"question": question, "answer": answer})
