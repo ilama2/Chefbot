@@ -113,9 +113,9 @@ def get_video_transcript(video_url):
     transcript = transcript_youtubeAPI(video_url)
     
     if transcript:
-        print("✅ Got transcript from YouTube API.")
+        print("Got transcript from YouTube API.")
     else:
-        print("⚠️ No transcript available via YouTube. Falling back to Whisper...")
+        print("No transcript available via YouTube. Falling back to Whisper...")
         audio_file = audio_downloader_yt_dlp(video_url)
         if not audio_file:
             print("Error: Failed to download audio.")

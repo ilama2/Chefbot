@@ -2,30 +2,31 @@ import streamlit as st
 import time
 import os
 import re
+from dotenv import load_dotenv
 from PIL import Image
 from io import BytesIO
 import requests
 from urllib.parse import urlparse, parse_qs
 import base64
 from pinecone import Pinecone
-import os
-from dotenv import load_dotenv
 from openai import OpenAI
-
-# Import th functionality
-from qa_engine import ask_question_with_video_context , ask_question_general
+import pinecone
+from rag_system import  ask_question
 from transcript_processor import get_video_transcript, extract_video_id
 from vector_store import add_video_to_vectorstore, create_pinecone_index_if_needed
+from agent import get_recipe_answer
 
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment="us-east-1")
 index_name = "audios-transcripts"
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+index = pc.Index(index_name)
+
 
 
 # Configure Streamlit page
 st.set_page_config(
-    page_title="ChefBot- YouTube Video Transcript Analysis",
-    page_icon="🍳",
+    page_title="ChefBot",
+    page_icon="👨‍🍳",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -57,6 +58,12 @@ st.markdown("""
         font-size: 1.2rem;
         font-weight: bold;
         margin-top: 1rem;
+        color: #FF4B4B;
+    }
+
+    .stButton>button:hover {
+    background-color: #D94F4F;
+    
     }
 </style>
 """, unsafe_allow_html=True)
@@ -76,28 +83,33 @@ if 'video_info' not in st.session_state:
 if 'conversation_history' not in st.session_state: #
     st.session_state.conversation_history = []
 
+
 # Initialize Pinecone index
 with st.spinner("Initializing system..."):
     create_pinecone_index_if_needed(pc, index_name)
 
 # App header
-st.markdown("<h1 class='main-header'> ChefBot 🍳</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='main-header'> ChefBot 👨‍🍳🤖</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subheader'>Analyze cooking videos and ask questions about recipes</p>", unsafe_allow_html=True)
+
 
 # Sidebar
 with st.sidebar:    
-    st.header("About")
+    st.header("About ChefBot 👨‍🍳🤖")
     st.write("""
-    This app helps you analyze cooking videos from YouTube. 
-    Enter a YouTube URL to process the video and then ask questions about the recipe.
+    - ChefBot is your smart kitchen assistant! 
+    - Just paste a YouTube cooking video link, and ChefBot will analyze it for you.  
+    - You can then ask detailed questions about the recipe, ingredients, or steps.
     """)
-    
-    st.header("How to Use")
-    st.write("1. Paste a YouTube URL and click 'Process Video'")
-    st.write("2. Wait for the video to be processed")
-    st.write("3. Ask questions about the recipe")
-    
-    
+    st.divider()
+
+    st.header("📝 How to Use")
+    st.write("1. 🔗 Paste a **YouTube video URL** ")
+    st.write("2.  ▶️ Click **Process Video** ")
+    st.write("3. 🤖 Ask **For any recipes**")
+
+    st.divider()
+
     st.header("General Questions")
     st.write("You can also ask general cooking questions without a video.")
 
@@ -166,8 +178,7 @@ with col2:
     if st.session_state.current_video_id:
         thumbnail = get_youtube_thumbnail(st.session_state.current_video_id)
         if thumbnail:
-            st.image(thumbnail, use_container_width=True)
-        
+            st.image(thumbnail, use_container_width=True)        
         # Add video embed
         st.markdown(
             embed_youtube_video(st.session_state.current_video_id),
@@ -185,19 +196,15 @@ ask_button = st.button("Ask Question", type="primary")
 
 if ask_button and question:
     with st.spinner("Thinking..."):
-        if st.session_state.video_processed and st.session_state.current_video_id:
-            # Question about processed video
-            answer = ask_question_with_video_context(question, st.session_state.current_video_id, client, pc, index_name)
-            
-            # Add to conversation history
-            st.session_state.conversation_history.append({"question": question, "answer": answer})
-        else:
-            # General cooking question
-            answer = ask_question_general(question,client)
-
-            
-            # Add to conversation history
-            st.session_state.conversation_history.append({"question": question, "answer": answer})
+        # Determine if we have a processed video and ID
+        video_id = st.session_state.current_video_id if st.session_state.video_processed else None
+        # Ask question using combined logic
+        answer = ask_question(question, video_id, client, pc, index_name)
+        # Store in conversation history
+        st.session_state.conversation_history.append({
+            "question": question,
+            "answer": answer 
+        })
 
 # Display conversation history
 st.markdown("---")
