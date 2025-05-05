@@ -5,6 +5,8 @@ from pinecone import Pinecone
 import os
 from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 
 
 from transcript_processor import extract_video_id
@@ -51,16 +53,12 @@ def get_embedding(text):
     return embedding_model.embed_query(text)
 
 # Split text into chunks with overlap
-def split_into_chunks(text, chunk_size: int = 1000, overlap: int = 200):
-    words = text.split()
-    chunks = []
-    i = 0
-    while i < len(words):
-        end = min(i + chunk_size, len(words))
-        chunk = " ".join(words[i:end])
-        chunks.append(chunk)
-        i += chunk_size - overlap
-    return chunks
+def split_into_chunks(text: str, chunk_size: int = 1000, overlap: int = 200):
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=overlap,
+    )
+    return text_splitter.split_text(text)
 
 # Extract metadata from transcript
 def extract_metadata(text, video_id):
