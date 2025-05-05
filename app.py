@@ -16,7 +16,8 @@ from vector_store import add_video_to_vectorstore, create_pinecone_index_if_need
 
 # 🔁 Load environment
 load_dotenv()
-pc = Pinecone(api_key=st.secrets["PINECONE_API_KEY"], environment="us-east-1")
+pinecone_api_key = st.secrets["PINECONE_API_KEY"]
+pc = Pinecone(api_key=pinecone_api_key, environment="us-east-1")
 index_name = "audios-transcripts"
 llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7, openai_api_key=st.secrets["OPENAI_API_KEY"])
 
