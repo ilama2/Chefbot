@@ -18,7 +18,7 @@ from vector_store import add_video_to_vectorstore, create_pinecone_index_if_need
 load_dotenv()
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment="us-east-1")
 index_name = "audios-transcripts"
-llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7, openai_api_key=os.getenv("OPENAI_API_KEY"))
+llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7, openai_api_key=st.secrets("OPENAI_API_KEY"))
 
 st.set_page_config(page_title="ChefBot", page_icon="👨‍🍳", layout="wide")
 
