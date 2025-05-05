@@ -10,15 +10,17 @@ from vector_store import query_vector_store, rerank_results, format_context
 
 load_dotenv()
 
-# Initialize OpenAI and Pinecone clients
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Initialize Pinecone clients
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment="us-east-1")
 
 # Define the index name used in Pinecone for storing transcripts
 index_name = "audios-transcripts"
 
 # Initialize the LLM
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.7)
+llm = ChatOpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0,
+    openai_api_key=os.getenv("OPENAI_API_KEY"))
 
 # Set a maximum token limit for context to avoid exceeding model limits
 MAX_TOKENS = 1500  
@@ -57,9 +59,9 @@ def generate_prompt(context, recipe_name, question):
         return prompt
 
 # Retrieve relevant context and recipe name from the video transcript
-def get_video_context(question, video_id, client, pc, index_name):
+def get_video_context(question, video_id, pc, index_name):
     # Step 1: Try retrieving context from the video
-    results = query_vector_store(question, client, pc, index_name, video_id, top_k=8)
+    results = query_vector_store(question, pc, index_name, video_id, top_k=8)
     use_video_context = len(results) > 0
 
     if use_video_context:
@@ -86,9 +88,9 @@ def truncate_context(context, max_tokens=MAX_TOKENS):
     return truncated_context
 
 # Tool function used by the agent to fetch context and generate an answer
-def recipe_tool(query, video_id, client, pc, index_name):
+def recipe_tool(query, video_id, pc, index_name):
     """Tool function to retrieve context and generate prompt for recipe question."""
-    context, recipe_name = get_video_context(query, video_id, client, pc, index_name)
+    context, recipe_name = get_video_context(query, video_id, pc, index_name)
 
     if context and recipe_name:
         context = truncate_context(context)  # Truncate context if needed
@@ -109,12 +111,12 @@ def recipe_tool(query, video_id, client, pc, index_name):
         return "Sorry, I couldn't find relevant information in the video transcript.", None
 
 # Main function that sets up and runs the LangChain agent to handle user questions
-def get_recipe_answer(question: str, video_id: str, client, pc, index_name: str) -> str:
+def get_recipe_answer(question: str, video_id: str, pc, index_name: str) -> str:
     # Define the tool the agent can use for recipe Q&A
     tools = [
         Tool(
             name="RecipeQuestion",
-            func=lambda query: recipe_tool(query, video_id, client, pc, index_name),  # Pass `video_id` here for each call
+            func=lambda query: recipe_tool(query, video_id, pc, index_name),  # Pass `video_id` here for each call
             description="Use this tool to answer any questions about the cooking video or recipes."
         )
     ]

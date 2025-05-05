@@ -11,14 +11,19 @@ import base64
 from pinecone import Pinecone
 from openai import OpenAI
 import pinecone
+from langchain_openai import ChatOpenAI
 from rag_system import  ask_question
 from transcript_processor import get_video_transcript, extract_video_id
 from vector_store import add_video_to_vectorstore, create_pinecone_index_if_needed
 from agent import get_recipe_answer
 
+
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment="us-east-1")
 index_name = "audios-transcripts"
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+llm = ChatOpenAI(
+        model_name="gpt-3.5-turbo",
+        temperature=0.7,
+        openai_api_key=os.getenv("OPENAI_API_KEY"))
 index = pc.Index(index_name)
 
 
@@ -167,7 +172,7 @@ with col1:
                     st.success("Video transcript fetched successfully!")
                     
                     with st.spinner("Adding to vector database for search..."):
-                        add_video_to_vectorstore(transcript, video_id , client, pc, index_name)
+                        add_video_to_vectorstore(transcript, video_id, pc, index_name)
                         st.session_state.video_processed = True
                         st.success("Video processed and ready for questions!")
                 else:
@@ -199,7 +204,7 @@ if ask_button and question:
         # Determine if we have a processed video and ID
         video_id = st.session_state.current_video_id if st.session_state.video_processed else None
         # Ask question using combined logic
-        answer = ask_question(question, video_id, client, pc, index_name)
+        answer = ask_question(question, video_id, llm, pc, index_name)
         # Store in conversation history
         st.session_state.conversation_history.append({
             "question": question,

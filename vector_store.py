@@ -4,6 +4,9 @@ from openai import OpenAI
 from pinecone import Pinecone
 import os
 from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
+
+
 from transcript_processor import extract_video_id
 
 # Ensure Pinecone index exists and is ready.
@@ -42,13 +45,10 @@ def create_pinecone_index_if_needed(pc, index_name):
     except Exception as e:
         print(f"Error creating index: {e}")
 
+embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 # Get embedding
-def get_embedding(text, client):
-    response = client.embeddings.create(
-        input=[text],
-        model="text-embedding-ada-002"
-    )
-    return response.data[0].embedding
+def get_embedding(text):
+    return embedding_model.embed_query(text)
 
 # Split text into chunks with overlap
 def split_into_chunks(text, chunk_size: int = 1000, overlap: int = 200):
@@ -100,7 +100,7 @@ def extract_metadata(text, video_id):
     }
 
 # Process and add video transcript to Pinecone.
-def add_video_to_vectorstore(transcript, video_id, client, pc, index_name):
+def add_video_to_vectorstore(transcript, video_id,  pc, index_name):
     # Ensure index exists
     create_pinecone_index_if_needed(pc, index_name)
     
@@ -125,7 +125,7 @@ def add_video_to_vectorstore(transcript, video_id, client, pc, index_name):
             chunk_id = f"{video_id}_{chunk_index}"
 
             # Get embedding for each chunk
-            embedding = get_embedding(chunk_text, client)
+            embedding = get_embedding(chunk_text)
 
             # Create vector with metadata
             vector = {
@@ -150,9 +150,9 @@ def add_video_to_vectorstore(transcript, video_id, client, pc, index_name):
     print(f"Successfully added {len(chunks)} chunks to vector store for video {video_id}")
 
 # Query Pinecone for relevant chunks
-def query_vector_store(question, client, pc, index_name, video_id=None, top_k=5):
+def query_vector_store(question,  pc, index_name, video_id=None, top_k=5):
     # Get embedding for the question
-    query_embedding = get_embedding(question, client)
+    query_embedding = get_embedding(question)
     
     # Set up query
     index = pc.Index(index_name)
