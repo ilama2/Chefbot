@@ -99,48 +99,44 @@ def transcript_whisper(file_audio):
     except Exception as e:
         print(f"Error transcribing with Whisper: {e}")
         return None
-
+    
 # Main function to get video transcript.
 def get_video_transcript(video_url):
     video_id = extract_video_id(video_url)
     if not video_id:
         print("Error: Invalid YouTube URL")
         return None
-        
+
     os.makedirs('transcripts', exist_ok=True)
-    
-    # Step 1: Try YouTube API
-    transcript = transcript_youtubeAPI(video_url)
-    
-    if transcript:
-        print("Got transcript from YouTube API.")
-    else:
-        print("No transcript available via YouTube. Falling back to Whisper...")
-        audio_file = audio_downloader_yt_dlp(video_url)
-        if not audio_file:
-            print("Error: Failed to download audio.")
-            return None
-        
-        mp3_file = convert_webm_to_mp3(audio_file)
-        if not mp3_file:
-            print("Error: Failed to convert audio.")
-            return None
 
-        transcript = transcript_whisper(mp3_file)
+    # Download audio using yt-dlp
+    audio_file = audio_downloader_yt_dlp(video_url)
+    if not audio_file:
+        print("Error: Failed to download audio.")
+        return None
 
-        if not transcript:
-            print("Error: Failed to transcribe audio.")
-            return None
+    # Convert to mp3
+    mp3_file = convert_webm_to_mp3(audio_file)
+    if not mp3_file:
+        print("Error: Failed to convert audio.")
+        return None
 
-        # Cleanup downloaded audio files
-        for f in [audio_file, mp3_file]:
-            if f and os.path.exists(f):
-                os.remove(f)
+    # Transcribe using Whisper
+    transcript = transcript_whisper(mp3_file)
+    if not transcript:
+        print("Error: Failed to transcribe audio.")
+        return None
+
+    # Cleanup downloaded audio files
+    for f in [audio_file, mp3_file]:
+        if f and os.path.exists(f):
+            os.remove(f)
 
     # Save transcript to disk
-    transcript_path = f"transcripts/transcripts+{video_id}.txt"
+    transcript_path = f"transcripts/transcript+{video_id}.txt"
     with open(transcript_path, "w") as f:
         f.write(transcript)
-    
+
     print(f"Transcript saved to {transcript_path}")
     return transcript
+

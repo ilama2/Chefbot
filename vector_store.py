@@ -6,9 +6,6 @@ import os
 from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-
-
 from transcript_processor import extract_video_id
 
 # Ensure Pinecone index exists and is ready.
