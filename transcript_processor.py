@@ -4,7 +4,6 @@ import subprocess
 import re
 from typing import Optional
 from yt_dlp import YoutubeDL
-from youtube_transcript_api import YouTubeTranscriptApi
 import whisper
 from urllib.parse import urlparse, parse_qs
 
