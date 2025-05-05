@@ -76,20 +76,6 @@ def clean_transcript(raw_text):
     
     return text.strip()
 
-# Get transcript from YouTube if available.
-def transcript_youtubeAPI(video_url):
-    try:
-        video_id = extract_video_id(video_url)
-        if not video_id:
-            return None
-            
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        text = " ".join([entry['text'] for entry in transcript])
-        cleaned_text = clean_transcript(text)
-        return cleaned_text    
-    except Exception as e:
-        print(f"Error fetching transcript from YouTube: {e}")
-        return None
 # Transcribe audio using Whisper.
 def transcript_whisper(file_audio):
     try:
