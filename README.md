@@ -36,26 +36,26 @@
               LANGCHAIN_PROJECT = your_langsmith_project
 
 
- 3. Repository Structure:
+ 2. ## Repository Structure:
 
     
       <img width="491" alt="Screenshot 1446-11-08 at 15 33 27" src="https://github.com/user-attachments/assets/972932c8-81e7-45e0-8a4f-ef92eb410d7b" />
 
     
-4. Configuration Details
-   -  requirements.txt
-   -  Environment Variables (.env)
+3. ## Configuration Details
+   1. requirements.txt
+   2. Environment Variables (.env)
      
               OPENAI_API_KEY = your_openai_api_key
               PINECONE_API_KEY = your_pinecone_api_key
               LANGCHAIN_API_KEY = your_langsmith_api_key
               LANGCHAIN_PROJECT = your_langsmith_project
-5.  Usage Guide:
-   - Running the Application:
+4. ## Usage Guide:
+   1.  Running the Application:
        ```bash
        cd chefbot
        streamlit run app.py
-   - Using ChefBot
+   2. Using ChefBot
       1. Process a YouTube Cooking Video:
        - Paste a YouTube URL into input field
        - Click "Process Video" to extract and process the transcript
