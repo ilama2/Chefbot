@@ -36,19 +36,6 @@ def extract_ingredients(text):
     ]
     return [item for item in common_ingredients if item in text.lower()]
 
-# --- Feature: Save to Favorites ---
-def save_favorite(recipe_name, user_id="default"):
-    try:
-        with open("favorites.json", "r") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        data = {}
-
-    data.setdefault(user_id, []).append(recipe_name)
-
-    with open("favorites.json", "w") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
 # --- Feature: Convert Units ---
 def convert_units(text):
     unit_map = {
@@ -124,11 +111,6 @@ def ask_question(question, video_id, llm, pc, index_name):
 
         # Step 6: Convert units (optional enhancement)
         response.content = convert_units(response.content)
-
-        # Step 7: Check for favorite saving
-        if "save" in question.lower() or "favorite" in question.lower():
-            save_favorite(recipe_name)
-            response.content += "\n✨ This recipe has been saved to your favorites."
 
         return response.content
 
