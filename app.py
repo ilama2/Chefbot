@@ -15,6 +15,8 @@ from transcript_processor import get_video_transcript, extract_video_id
 from vector_store import add_video_to_vectorstore, create_pinecone_index_if_needed
 import os
 import subprocess
+import ffmpeg
+
 
 os.system('apt-get update')
 os.system('apt-get install -y ffmpeg')
