@@ -37,29 +37,8 @@
 
 
  3. Repository Structure:
-      ChefBot/
-    
-      ├─ RAG.py   # RAG implementation for Q&A
-    
-      ├─ transcript_processor.py  # YouTube transcript processing module
-    
-      ├─ vector_store.py # Pinecone vector store
-    
-      ├─ requirements.txt # Python dependencies
-    
-      ├─ README.md # Project overview
-    
-      ├─ deployment /
-    
-      │  ├─ app.py  # Streamlit UI
-    
-      ├─ audio/
-    
-      │  ├─ Audio
-    
-      ├─ transcripts/
-    
-      │  ├─ transcripts
+      <img width="491" alt="Screenshot 1446-11-08 at 15 33 27" src="https://github.com/user-attachments/assets/972932c8-81e7-45e0-8a4f-ef92eb410d7b" />
+
     
 5. Configuration Details
    -  requirements.txt
@@ -86,12 +65,9 @@
       3. General Cooking Questions:
        - You can ask general cooking questions without processing a video
       4.  Example Questions:
-         
-         `How long should I cook the chicken?`
-         
-         `What tools do I need for this recipe?`
-         
-         `What ingredients do I need for this recipe?`
+         `How long should I cook the chicken?`,
+         `What tools do I need for this recipe?`,
+         `What ingredients do I need for this recipe?`,
          
       5. Viewing Transcripts
        - Click on "View Transcript" to see the full transcript of the processed video
