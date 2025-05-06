@@ -13,6 +13,12 @@ from langchain_openai import ChatOpenAI
 from rag import ask_question
 from transcript_processor import get_video_transcript, extract_video_id
 from vector_store import add_video_to_vectorstore, create_pinecone_index_if_needed
+import os
+import subprocess
+
+if not os.path.isfile("/usr/local/bin/ffmpeg"):
+    subprocess.run(["apt-get", "update"])
+    subprocess.run(["apt-get", "install", "ffmpeg", "-y"])
 
 # 🔁 Load environment
 load_dotenv()
