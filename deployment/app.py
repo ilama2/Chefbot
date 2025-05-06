@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 from pinecone import Pinecone
 from langchain_openai import ChatOpenAI
 
-from RAG import ask_question  
+from RAG import ask_question
 from transcript_processor import get_video_transcript, extract_video_id
 from vector_store import add_video_to_vectorstore, create_pinecone_index_if_needed
 
