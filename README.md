@@ -38,7 +38,8 @@
 
   ## 2. Repository Structure:
         
-   <img width="491" alt="Screenshot 1446-11-08 at 15 33 27" src="https://github.com/user-attachments/assets/972932c8-81e7-45e0-8a4f-ef92eb410d7b" />
+   <img width="530" alt="Screenshot 1446-11-08 at 15 52 34" src="https://github.com/user-attachments/assets/1737895a-7239-43ec-b789-6b9b69adbc17" />
+
 
   ## 3. Configuration Details
    1. requirements.txt
@@ -60,12 +61,15 @@
        - Paste a YouTube URL into input field
        - Click "Process Video" to extract and process the transcript
        - Wait for confirmation that the video has been processed
+         
   2. Ask Questions:
        - Type your question about the recipe
        - Click "Ask Question" to get a response
        - View the answer in the conversation history section
+   
   3. General Cooking Questions:
        - You can ask general cooking questions without processing a video
+
   4.  Example Questions:
             `How long should I cook the chicken?`,
             `What tools do I need for this recipe?`,
