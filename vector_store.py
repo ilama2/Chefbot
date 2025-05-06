@@ -97,8 +97,7 @@ def extract_metadata(text, video_id):
 # Process and add video transcript to Pinecone.
 def add_video_to_vectorstore(transcript, video_id,  pc, index_name):
     # Ensure index exists
-    create_pinecone_index_if_needed(pc, index_name)
-    
+    #create_pinecone_index_if_needed(pc, index_name)
     # Get index
     index = pc.Index(index_name)
     
