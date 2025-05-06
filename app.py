@@ -20,6 +20,14 @@ import ffmpeg
 
 os.system('apt-get update')
 os.system('apt-get install -y ffmpeg')
+import asyncio
+
+# Ensure an event loop is running
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
 # 🔁 Load environment
 load_dotenv()
