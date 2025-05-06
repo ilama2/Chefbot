@@ -1,6 +1,6 @@
 import os 
 import json
-from langchain.vectorstores import Pinecone
+from langchain_community.vectorstores import Pinecone
 from langchain.llms import OpenAI
 from langchain.schema import SystemMessage, HumanMessage
 from langsmith import traceable
