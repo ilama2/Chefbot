@@ -80,7 +80,12 @@ def transcript_whisper(file_audio):
     try:
         model = whisper.load_model("large")
         result = model.transcribe(file_audio)
-        return clean_transcript(result['text'])
+        transcript= clean_transcript(result['text'])
+                # Memory cleanup
+        del result
+        del model
+        gc.collect()
+        return transcript
     except Exception as e:
         print(f"Error transcribing with Whisper: {e}")
         return None
