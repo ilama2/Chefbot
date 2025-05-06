@@ -30,8 +30,11 @@
       pip install -r requirements.txt
    - Create a .env file with your API keys:
      OPENAI_API_KEY = your_openai_api_key
+     
      PINECONE_API_KEY = your_pinecone_api_key
+     
      LANGCHAIN_API_KEY = your_langsmith_api_key
+     
      LANGCHAIN_PROJECT = your_langsmith_project
 
 
@@ -48,29 +51,36 @@
       │  ├─ Audio 
       ├─ transcripts/
       │  ├─ transcripts
-4. Configuration Details
+    
+5. Configuration Details
    -  requirements.txt
    -  Environment Variables (.env)
         -     OPENAI_API_KEY = your_openai_api_key
               PINECONE_API_KEY = your_pinecone_api_key
               LANGCHAIN_API_KEY = your_langsmith_api_key
               LANGCHAIN_PROJECT = your_langsmith_project
-5.  Usage Guide:
+6.  Usage Guide:
    - Running the Application:
        ```bash
        cd chefbot
        streamlit run app.py
    - Using ChefBot
-       -      1. Process a YouTube Cooking Video:
-       -          - Paste a YouTube URL into input field
-       -          - Click "Process Video" to extract and process the transcript
-       -          - Wait for confirmation that the video has been processed
-               2. Ask Questions:
-                  - Type your question about the recipe
-                  - Click "Ask Question" to get a response
-                  - View the answer in the conversation history section
-               3. General Cooking Questions:
-                  - You can ask general cooking questions without processing a video    
+      1. Process a YouTube Cooking Video:
+       - Paste a YouTube URL into input field
+       - Click "Process Video" to extract and process the transcript
+       - Wait for confirmation that the video has been processed
+      2. Ask Questions:
+       - Type your question about the recipe
+       - Click "Ask Question" to get a response
+       - View the answer in the conversation history section
+      3. General Cooking Questions:
+       - You can ask general cooking questions without processing a video
+      4.  Example Questions:
+         `How long should I cook the chicken?`
+         `What tools do I need for this recipe?`
+         `What ingredients do I need for this recipe?`
+      5. Viewing Transcripts
+       - Click on "View Transcript" to see the full transcript of the processed video
 
      
      
