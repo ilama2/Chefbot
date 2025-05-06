@@ -16,9 +16,8 @@ from vector_store import add_video_to_vectorstore, create_pinecone_index_if_need
 import os
 import subprocess
 
-if not os.path.isfile("/usr/local/bin/ffmpeg"):
-    subprocess.run(["apt-get", "update"])
-    subprocess.run(["apt-get", "install", "ffmpeg", "-y"])
+os.system('apt-get update')
+os.system('apt-get install -y ffmpeg')
 
 # 🔁 Load environment
 load_dotenv()
