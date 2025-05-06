@@ -37,10 +37,12 @@
 
 
  3. Repository Structure:
+
+    
       <img width="491" alt="Screenshot 1446-11-08 at 15 33 27" src="https://github.com/user-attachments/assets/972932c8-81e7-45e0-8a4f-ef92eb410d7b" />
 
     
-5. Configuration Details
+4. Configuration Details
    -  requirements.txt
    -  Environment Variables (.env)
      
@@ -48,7 +50,7 @@
               PINECONE_API_KEY = your_pinecone_api_key
               LANGCHAIN_API_KEY = your_langsmith_api_key
               LANGCHAIN_PROJECT = your_langsmith_project
-6.  Usage Guide:
+5.  Usage Guide:
    - Running the Application:
        ```bash
        cd chefbot
