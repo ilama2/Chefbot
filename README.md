@@ -9,15 +9,15 @@
    -  LangSmith API key (for tracing)
 2. Environment Setup
    -  Clone the repository:
-     ```bash
-     git clone https://github.com/ilama2/Chefbot.git
-     cd Chefbot
-3
+       ```bash
+      git clone https://github.com/ilama2/Chefbot.git
+      cd Chefbot
+
 
    -  Create and activate a virtual environment:
-    ```bash
+      ```bash
 
-     python -m venv venv
+      python -m venv venv
      
       # Activate the virtual environment
       # On macOS/Linux:
@@ -33,8 +33,45 @@
      PINECONE_API_KEY = your_pinecone_api_key
      LANGCHAIN_API_KEY = your_langsmith_api_key
      LANGCHAIN_PROJECT = your_langsmith_project
-   - 
-     
+
+
+ 3. Repository Structure:
+      ChefBot/
+      ├─ RAG.py   # RAG implementation for Q&A
+      ├─ transcript_processor.py  # YouTube transcript processing module
+      ├─ vector_store.py # Pinecone vector store 
+      ├─ requirements.txt # Python dependencies
+      ├─ README.md # Project overview
+      ├─ deployment /
+      │  ├─ app.py  # Streamlit UI
+      ├─ audio/
+      │  ├─ Audio 
+      ├─ transcripts/
+      │  ├─ transcripts
+4. Configuration Details
+   -  requirements.txt
+   -  Environment Variables (.env)
+        -     OPENAI_API_KEY = your_openai_api_key
+              PINECONE_API_KEY = your_pinecone_api_key
+              LANGCHAIN_API_KEY = your_langsmith_api_key
+              LANGCHAIN_PROJECT = your_langsmith_project
+5.  Usage Guide:
+   - Running the Application:
+       ```bash
+       cd chefbot
+       streamlit run app.py
+   - Using ChefBot
+       -      1. Process a YouTube Cooking Video:
+       -          - Paste a YouTube URL into input field
+       -          - Click "Process Video" to extract and process the transcript
+       -          - Wait for confirmation that the video has been processed
+               2. Ask Questions:
+                  - Type your question about the recipe
+                  - Click "Ask Question" to get a response
+                  - View the answer in the conversation history section
+               3. General Cooking Questions:
+                  - You can ask general cooking questions without processing a video    
+
      
      
      
