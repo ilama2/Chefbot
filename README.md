@@ -49,26 +49,29 @@
               LANGCHAIN_API_KEY = your_langsmith_api_key
               LANGCHAIN_PROJECT = your_langsmith_project
   ## 4. Usage Guide:
-### 1.  Running the Application:
-       ```bash
+### 1. Running the Application:
+      ```bash
        cd chefbot
        streamlit run app.py
-###2. Using ChefBot
-      1. Process a YouTube Cooking Video:
+
+
+### 2. Using ChefBot
+  1. Process a YouTube Cooking Video:
        - Paste a YouTube URL into input field
        - Click "Process Video" to extract and process the transcript
        - Wait for confirmation that the video has been processed
-      2. Ask Questions:
+  2. Ask Questions:
        - Type your question about the recipe
        - Click "Ask Question" to get a response
        - View the answer in the conversation history section
-      3. General Cooking Questions:
+  3. General Cooking Questions:
        - You can ask general cooking questions without processing a video
-      4.  Example Questions:
+  4.  Example Questions:
             `How long should I cook the chicken?`,
             `What tools do I need for this recipe?`,
-            `What ingredients do I need for this recipe?`,
-      5. Viewing Transcripts
+            `What ingredients do I need for this recipe?`
+
+  6. Viewing Transcripts
        - Click on "View Transcript" to see the full transcript of the processed video
 
      
