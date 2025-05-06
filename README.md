@@ -29,33 +29,43 @@
       ```bash
       pip install -r requirements.txt
    - Create a .env file with your API keys:
-     OPENAI_API_KEY = your_openai_api_key
      
-     PINECONE_API_KEY = your_pinecone_api_key
-     
-     LANGCHAIN_API_KEY = your_langsmith_api_key
-     
-     LANGCHAIN_PROJECT = your_langsmith_project
+              OPENAI_API_KEY = your_openai_api_key
+              PINECONE_API_KEY = your_pinecone_api_key
+              LANGCHAIN_API_KEY = your_langsmith_api_key
+              LANGCHAIN_PROJECT = your_langsmith_project
 
 
  3. Repository Structure:
       ChefBot/
+    
       ├─ RAG.py   # RAG implementation for Q&A
+    
       ├─ transcript_processor.py  # YouTube transcript processing module
-      ├─ vector_store.py # Pinecone vector store 
+    
+      ├─ vector_store.py # Pinecone vector store
+    
       ├─ requirements.txt # Python dependencies
+    
       ├─ README.md # Project overview
+    
       ├─ deployment /
+    
       │  ├─ app.py  # Streamlit UI
+    
       ├─ audio/
-      │  ├─ Audio 
+    
+      │  ├─ Audio
+    
       ├─ transcripts/
+    
       │  ├─ transcripts
     
 5. Configuration Details
    -  requirements.txt
    -  Environment Variables (.env)
-        -     OPENAI_API_KEY = your_openai_api_key
+     
+              OPENAI_API_KEY = your_openai_api_key
               PINECONE_API_KEY = your_pinecone_api_key
               LANGCHAIN_API_KEY = your_langsmith_api_key
               LANGCHAIN_PROJECT = your_langsmith_project
@@ -76,9 +86,13 @@
       3. General Cooking Questions:
        - You can ask general cooking questions without processing a video
       4.  Example Questions:
+         
          `How long should I cook the chicken?`
+         
          `What tools do I need for this recipe?`
+         
          `What ingredients do I need for this recipe?`
+         
       5. Viewing Transcripts
        - Click on "View Transcript" to see the full transcript of the processed video
 
