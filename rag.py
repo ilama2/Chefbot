@@ -32,7 +32,7 @@ llm = ChatOpenAI(
 def extract_ingredients(text):
     common_ingredients = [
         "salt", "sugar", "oil", "flour", "eggs", "milk", 
-        "pepper", "garlic", "onion", "tomato", "butter", "cheese"
+        "pepper", "garlic", "onion", "tomato", "butter", "cheese", "chicken", "beef", "carrot", "potato", "cucumber", "lemon", "vinegar"
     ]
     return [item for item in common_ingredients if item in text.lower()]
 
@@ -104,10 +104,12 @@ def ask_question(question, video_id, llm, pc, index_name):
         response = llm.invoke(messages)
 
         # Step 5: Auto-generate shopping list
-        ingredients = extract_ingredients(response.content)
-        if ingredients:
-            shopping_list = "\n\n🛒 **Shopping List:**\n" + "\n".join(f"• {item}  " for item in ingredients)
-            response.content += shopping_list
+        if 'ingredient' in question.lower() or 'buy' in question.lower() or 'shopping list' in question.lower() or 'recipe' in question.lower():
+            # Step 5: Auto-generate shopping list
+            ingredients = extract_ingredients(response.content)
+            if ingredients:
+                shopping_list = "\n\n🛒 **Shopping List:**\n" + "\n".join(f"• {item}" for item in ingredients)
+                response.content += shopping_list
 
         # Step 6: Convert units (optional enhancement)
         response.content = convert_units(response.content)
