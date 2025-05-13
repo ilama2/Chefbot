@@ -78,7 +78,7 @@ def clean_transcript(raw_text):
 # Transcribe audio using Whisper.
 def transcript_whisper(file_audio):
     try:
-        model = whisper.load_model("large")
+        model = whisper.load_model("small")
         result = model.transcribe(file_audio)
         transcript= clean_transcript(result['text'])
                 # Memory cleanup
